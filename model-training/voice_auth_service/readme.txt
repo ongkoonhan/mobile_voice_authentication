@@ -1,0 +1,1 @@
+model: verification_classifier\good_models\2020-03-20_12-20-57\mobile_model.pt
