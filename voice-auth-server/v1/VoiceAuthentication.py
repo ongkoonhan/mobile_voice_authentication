@@ -11,7 +11,7 @@ VOTING_THRESHOLD = 40   # 80%
 
 
 class VoiceAuthentication:
-    def __init__(self, model_path, print_info=True):
+    def __init__(self, model_path, print_info=False):
         self.print_info = print_info
         self.model_path = model_path
         self.model = None
