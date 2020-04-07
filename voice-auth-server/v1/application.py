@@ -1,8 +1,9 @@
-import numpy as np
-import librosa
-import librosa.display
+import os
 from flask import Flask, request, render_template, jsonify
+
 from VoiceAuthentication import VoiceAuthentication
+import app_setup
+
 
 application = Flask(__name__)
 
@@ -17,10 +18,18 @@ def verify():
     '''
     verify from wav files
     '''
-    f1 = request.files["wav1"]
-    f2 = request.files["wav2"]
+    def get_and_save_temp_file(request_file):
+        file_storage = request.files[request_file]
+        temp_path = os.path.join(app_setup.TEMP_FOLDER, file_storage.filename)
+        file_storage.save(temp_path)
+        return temp_path
 
-    result = VoiceAuthentication('mobile_model.pt').authenticate(f1, f2)
+    # f1 = request.files["wav1"]
+    # f2 = request.files["wav2"]
+    f1_path = get_and_save_temp_file("wav1")
+    f2_path = get_and_save_temp_file("wav2")
+
+    result = VoiceAuthentication('mobile_model.pt').authenticate(f1_path, f2_path)
 
     # return render_template('index.html', display=result[0])
     return jsonify(verification=result[0],
