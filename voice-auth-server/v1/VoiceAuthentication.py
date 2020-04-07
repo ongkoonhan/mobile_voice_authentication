@@ -86,7 +86,7 @@ class VoiceAuthentication:
         preds = preds.flatten().tolist()
         votes = sum(preds)
         print("VOTES: {}".format(votes))
-        return votes >= VOTING_THRESHOLD
+        return votes >= VOTING_THRESHOLD, votes, votes*100/len(preds)
 
 
 

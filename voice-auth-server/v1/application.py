@@ -1,7 +1,7 @@
 import numpy as np
 import librosa
 import librosa.display
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from VoiceAuthentication import VoiceAuthentication
 
 application = Flask(__name__)
@@ -22,7 +22,10 @@ def verify():
 
     result = VoiceAuthentication('mobile_model.pt').authenticate(f1, f2)
 
-    return render_template('index.html', display=result)
+    # return render_template('index.html', display=result[0])
+    return jsonify(verification=result[0],
+                   votes=result[1],
+                   percentage="{}%".format(result[2]))
 
 
 if __name__ == "__main__":
