@@ -57,6 +57,13 @@ public class Signup extends AppCompatActivity {
     }
 
     public void OpensignupV (){
+        Intent intent = new Intent(Signup.this ,SignupVoice.class);
+        EditText userName = findViewById(R.id.UserN);
+        EditText email = findViewById(R.id.Email);
+        intent.putExtra("name",userName.getText().toString());
+        intent.putExtra("email",email.getText().toString());
+        startActivityForResult(intent,REQ_CODE_ADD_ITEM);
+        /* Remove to prevent hit write limit
         EditText userName = findViewById(R.id.UserN);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         DatabaseReference user = ref.child("users");
@@ -72,6 +79,7 @@ public class Signup extends AppCompatActivity {
                 //error handling don here
             }
         });
+        */
     }
 
     private void processData(DataSnapshot dataSnapshot) {

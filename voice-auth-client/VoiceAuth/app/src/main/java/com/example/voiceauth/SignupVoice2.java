@@ -1,18 +1,27 @@
 package com.example.voiceauth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.app.ProgressDialog;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,6 +139,7 @@ public class SignupVoice2 extends AppCompatActivity {
         File dir = getFilesDir();
         File from = new File(AudioSavePathInDevice);
         convertMP3toWAV(from,v);
+
     }
 
     public void convertMP3toWAV(File mp3,View v){
@@ -138,17 +148,17 @@ public class SignupVoice2 extends AppCompatActivity {
             public void onSuccess(File convertedFile) {
                 File to = new File(getFilesDir()+"/"+name+".wav");
                 convertedFile.renameTo(to);
-                Toast.makeText(v.getContext(), "SUCCESS: " + to.getPath(), Toast.LENGTH_LONG).show();
-                // Upload to firebase here
-                File dir = getFilesDir();
-                if(dir.exists()){
-                    File[] file = getFilesDir().listFiles();
-                    for (File f : file) {
-                        if (f.isFile() && f.getPath().substring(f.getPath().lastIndexOf('.'),f.getPath().length()).equals((".wav"))) {
-                            f.delete();
-                        }
+                AudioSavePathInDevice =getFilesDir()+"/"+name+".wav";
+                File fdelete = new File(getFilesDir()+"/temp.mp3");
+                if (fdelete.exists()) {
+                    if (fdelete.delete()) {
+                        System.out.println("file Deleted : "+fdelete.toString());
+                    } else {
+                        System.out.println("file not Deleted");
                     }
                 }
+                Toast.makeText(v.getContext(), "SUCCESS: " + to.getPath(), Toast.LENGTH_LONG).show();
+                uploadFirebase();
                 ReturnMain();
             }
             @Override
@@ -163,5 +173,77 @@ public class SignupVoice2 extends AppCompatActivity {
                 .setFormat(AudioFormat.WAV)
                 .setCallback(callback)
                 .convert();
+    }
+
+    public void uploadFirebase() {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://projectonly-b6dda.appspot.com");
+        StorageReference storageRef = storage.getReference();
+        StorageReference fileRef = storageRef.child("user");
+        ProgressDialog progressDialog
+                = new ProgressDialog(SignupVoice2.this);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        fileRef.putFile(Uri.fromFile(new File(AudioSavePathInDevice))).addOnSuccessListener(
+                new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                    @Override
+                    public void onSuccess(
+                            UploadTask.TaskSnapshot taskSnapshot)
+                    {
+
+                        // Image uploaded successfully
+                        // Dismiss dialog
+                        progressDialog.dismiss();
+                        Toast
+                                .makeText(SignupVoice2.this,
+                                        "Image Uploaded!!",
+                                        Toast.LENGTH_SHORT)
+                                .show();
+                        File dir = getFilesDir();
+                        if(dir.exists()){
+                            File[] file = getFilesDir().listFiles();
+                            for (File f : file) {
+                                if (f.isFile() && f.getPath().substring(f.getPath().lastIndexOf('.'),f.getPath().length()).equals((".wav"))) {
+                                    f.delete();
+                                }
+                            }
+                        }
+                    }
+                })
+
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+
+                        // Error, Image not uploaded
+                        progressDialog.dismiss();
+                        Toast
+                                .makeText(SignupVoice2.this,
+                                        "Failed " + e.getMessage(),
+                                        Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                })
+                .addOnProgressListener(
+                        new OnProgressListener<UploadTask.TaskSnapshot>() {
+
+                            // Progress Listener for loading
+                            // percentage on the dialog box
+                            @Override
+                            public void onProgress(
+                                    UploadTask.TaskSnapshot taskSnapshot)
+                            {
+                                double progress
+                                        = (100.0
+                                        * taskSnapshot.getBytesTransferred()
+                                        / taskSnapshot.getTotalByteCount());
+                                progressDialog.setMessage(
+                                        "Uploaded "
+                                                + (int)progress + "%");
+                            }
+                            });
+
     }
 }
