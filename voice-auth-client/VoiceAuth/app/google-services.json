@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "889507319382",
+    "firebase_url": "https://projectonly-b6dda.firebaseio.com",
+    "project_id": "projectonly-b6dda",
+    "storage_bucket": "projectonly-b6dda.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889507319382:android:61b561b55ed94ab3a075f7",
+        "android_client_info": {
+          "package_name": "com.example.voiceauth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889507319382-nea0ec1hef06bp7jv20ifk7vcrc542ol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.voiceauth",
+            "certificate_hash": "adb8390ee4588471fb4dc95df6b17de6b515072b"
+          }
+        },
+        {
+          "client_id": "889507319382-dejmhd5m78nunbhsvbmg2jsdtgf01na0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5vwiNjAr4HlOjDVJtq3_3M-r299bRqww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889507319382-dejmhd5m78nunbhsvbmg2jsdtgf01na0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
