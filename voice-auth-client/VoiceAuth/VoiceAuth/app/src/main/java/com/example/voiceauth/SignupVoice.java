@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Random;
+
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
+import cafe.adriel.androidaudioconverter.model.AudioFormat;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -152,7 +158,7 @@ public class SignupVoice extends AppCompatActivity {
                     mediaPlayer.release();
                     MediaRecorderReady();
                 }
-                filechecker();
+                filechecker(findViewById(android.R.id.content));
                 callfireBase();
             }
         });
@@ -168,12 +174,23 @@ public class SignupVoice extends AppCompatActivity {
                     File[] file = getFilesDir().listFiles();
                     for (File f : file) {
                         if (f.isFile() && f.getPath().substring(f.getPath().lastIndexOf('.'),f.getPath().length()).equals((".wav"))) {
-                            File delete = new File(getFilesDir()+name+".wave");
+                            File delete = new File(getFilesDir()+"/temp.wav");
                             delete.delete();
                             ReturnMain();
                         }
                     }
                 }
+            }
+        });
+
+        AndroidAudioConverter.load(this, new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+                // Great!
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // FFmpeg is not supported by device
             }
         });
     }
@@ -203,7 +220,7 @@ public class SignupVoice extends AppCompatActivity {
                     buttonStart.setEnabled(true);
                     buttonStopPlayingRecording.setEnabled(false);
                     buttonPlayLastRecordAudio.setEnabled(true);
-                    filechecker();
+                    filechecker(findViewById(android.R.id.content));
                 }
             }
         });
@@ -250,16 +267,13 @@ public class SignupVoice extends AppCompatActivity {
         ref.push().setValue(user);
     }
 
-    public void filechecker(){
+    public void filechecker(View v){
         File dir = getFilesDir();
-        if(dir.exists()){
-            File from = new File(dir,"temp.mp3");
-            File to = new File(dir,name+".wav");
-            if(from.exists())
-                from.renameTo(to);
-        }
+        File from = new File(getFilesDir()+"/temp.mp3");
+        convertMP3toWAV(from,v);
 
-        File fdelete = new File(getFilesDir()+"/temp.mp3");
+
+        File fdelete = new File(getFilesDir()+"/temp.mp4");
         if (fdelete.exists()) {
             if (fdelete.delete()) {
                 System.out.println("file Deleted : "+fdelete.toString());
@@ -267,5 +281,24 @@ public class SignupVoice extends AppCompatActivity {
                 System.out.println("file not Deleted");
             }
         }
+    }
+
+    public void convertMP3toWAV(File mp3,View v){
+        IConvertCallback callback = new IConvertCallback() {
+            @Override
+            public void onSuccess(File convertedFile) {
+                Toast.makeText(v.getContext(), "SUCCESS: " + convertedFile.getPath(), Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onFailure(Exception error) {
+                Toast.makeText(v.getContext(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        };
+        Toast.makeText(v.getContext(), "Converting audio file...", Toast.LENGTH_SHORT).show();
+        AndroidAudioConverter.with(v.getContext())
+                .setFile(mp3)
+                .setFormat(AudioFormat.WAV)
+                .setCallback(callback)
+                .convert();
     }
 }

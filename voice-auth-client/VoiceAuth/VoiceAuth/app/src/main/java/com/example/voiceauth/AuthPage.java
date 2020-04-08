@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.View;
@@ -25,18 +24,20 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class AuthPage extends AppCompatActivity {
     private Button Go, VoiceA;
     private final int REQ_CODE_ADD_ITEM =6789;
-    public static final int RequestPermissionCode = 1;
     private TextView TV14,TV15;
     MediaRecorder mediaRecorder ;
     String AudioSavePathInDevice = null;
     public String FIREBASE_USERNAME;
     public String FIREBASE_PASSWORD;
     public FirebaseAuth mAuth;
+    public static final int RequestPermissionCode = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_page);
+
         FIREBASE_USERNAME = getResources().getString(R.string.username);
         FIREBASE_PASSWORD = getResources().getString(R.string.password);
         mAuth =FirebaseAuth.getInstance();
@@ -45,7 +46,7 @@ public class AuthPage extends AppCompatActivity {
         //Textviews 14 and 15 will appear after username is confirmed
         TV14 = (TextView) findViewById(R.id.TV14);
         TV15 = (TextView) findViewById(R.id.TV15);
-        TV15.setText(getResources().getString(R.string.Auth));
+
         //VoiceA button visibility default off, it will appear if the user name is registered
         //VoiceA button is use for voice authenication i.e. press and speak
 
@@ -66,24 +67,7 @@ public class AuthPage extends AppCompatActivity {
         VoiceA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkPermission()) {
-
-                    AudioSavePathInDevice =
-                            getFilesDir() + "/temp.wav";
-
-                    MediaRecorderReady();
-
-                    try {
-                        mediaRecorder.prepare();
-                        mediaRecorder.start();
-                    } catch (IllegalStateException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+                OpenFinal();
             }
         });
 
@@ -93,7 +77,6 @@ public class AuthPage extends AppCompatActivity {
     public void OpenFinal() {
         //for now, it will go to the final page
         //the actual code will be for the voice spoken to match with the sample collected
-        apiCall();
         Intent intent = new Intent(this,Final.class);
         startActivityForResult(intent,REQ_CODE_ADD_ITEM);
     }
@@ -101,12 +84,13 @@ public class AuthPage extends AppCompatActivity {
 
     public boolean apiCall(){
         Boolean result = false;
-        String requestURL = "https://c2927d55.ngrok.io";
+        String requestURL = "https://c2927d55.ngrok.io/verify";
         String file_path = AudioSavePathInDevice;
+
         try {
             MultipartUtilityV2 multipart = new MultipartUtilityV2(requestURL);
-            multipart.addFilePart("file_param_1", new File(file_path));
-            multipart.addFilePart("file_param_1", new File(file_path));
+            multipart.addFilePart("wav1", new File(file_path));
+            multipart.addFilePart("wav2", new File(file_path));
             String response = multipart.finish();
         } catch (IOException e) {
             e.printStackTrace();
