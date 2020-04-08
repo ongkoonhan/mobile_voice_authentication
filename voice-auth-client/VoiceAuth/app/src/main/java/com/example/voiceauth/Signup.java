@@ -38,6 +38,14 @@ public class Signup extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(FIREBASE_USERNAME,FIREBASE_PASSWORD);
 
         //go to another page to record voice
+        SaveP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Signup.this,MainActivity.class);
+                startActivity(i);
+            }
+        });
+
         NextA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
