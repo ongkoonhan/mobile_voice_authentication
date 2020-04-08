@@ -2,4 +2,7 @@
     <string name="app_name">VoiceAuth</string>
     <string name="username">zdrtgbf@gmail.com</string>
     <string name="password">Menu1995</string>
+    <string name="Regi">The basic premise of transfer learning is simple: take a model trained on a large dataset and transfer its knowledge to a smaller dataset.</string>
+    <string name="Auth">What this means in practice is that the loss tracks not only the error, but also the contribution to the error by each weight and bias in the model.</string>
+
 </resources>
