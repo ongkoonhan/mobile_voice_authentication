@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: nl.bravobit:android-ffmpeg:1.0.5@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f7ee868b6e05dfdd3ea634bd0120741e/jetified-android-ffmpeg-1.0.5/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f7ee868b6e05dfdd3ea634bd0120741e/jetified-android-ffmpeg-1.0.5/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/nl.bravobit/android-ffmpeg/1.0.5/12f9215a8a32bf1686dd5c19e5c012b1249eb3cb/android-ffmpeg-1.0.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/nl.bravobit/android-ffmpeg/1.0.5/f9db48ec16cdea16dc40ebd277e0b7560679060e/android-ffmpeg-1.0.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,5 +1,6 @@
 package com.example.voiceauth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -11,15 +12,21 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Random;
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
+import cafe.adriel.androidaudioconverter.model.AudioFormat;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -30,37 +37,34 @@ public class SignupVoice extends AppCompatActivity {
     String AudioSavePathInDevice = null;
     MediaRecorder mediaRecorder ;
     public static final int RequestPermissionCode = 1;
-    MediaPlayer mediaPlayer ;
     String name ="";
     String email ="";
-    public String FIREBASE_USERNAME;
-    public String FIREBASE_PASSWORD;
-    public FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_voice);
-        mAuth = FirebaseAuth.getInstance();
-        FIREBASE_USERNAME = getString(R.string.username);
-        FIREBASE_PASSWORD = getString(R.string.password);
-        mAuth.signInWithEmailAndPassword(FIREBASE_USERNAME,FIREBASE_PASSWORD);
         //Need to Yicheng's part on voice recording
-        //I have included a playback portion for user to check the voice recording before completion
         buttonStart =  (Button)findViewById(R.id.Record);
         buttonStop = (Button)findViewById(R.id.Stop);
-        buttonPlayLastRecordAudio = (Button)findViewById(R.id.PlayB);
-        buttonStopPlayingRecording = (Button)findViewById(R.id.StopP);
+        TextView contentToSay =findViewById(R.id.TV7);
+        contentToSay.setText(getResources().getString(R.string.Regi));
         buttonStop.setEnabled(false);
-        buttonPlayLastRecordAudio.setEnabled(false);
-        buttonStopPlayingRecording.setEnabled(false);
         Intent i = getIntent();
         name = i.getStringExtra("name");
         email = i.getStringExtra("email");
+
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                File fdelete = new File(getFilesDir()+"/temp.mp3");
+                if (fdelete.exists()) {
+                    if (fdelete.delete()) {
+                        System.out.println("file Deleted : "+fdelete.toString());
+                    } else {
+                        System.out.println("file not Deleted");
+                    }
+                }
                 if(checkPermission()) {
 
                     AudioSavePathInDevice =
@@ -78,10 +82,7 @@ public class SignupVoice extends AppCompatActivity {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
-                    buttonStart.setEnabled(false);
                     buttonStop.setEnabled(true);
-
                     Toast.makeText(SignupVoice.this, "Recording started",
                             Toast.LENGTH_LONG).show();
                 } else {
@@ -95,88 +96,17 @@ public class SignupVoice extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mediaRecorder.stop();
-                buttonStop.setEnabled(false);
-                buttonPlayLastRecordAudio.setEnabled(true);
-                buttonStart.setEnabled(true);
-                buttonStopPlayingRecording.setEnabled(false);
-
                 Toast.makeText(SignupVoice.this, "Recording Completed",
                         Toast.LENGTH_LONG).show();
+                nextPage();
             }
         });
 
-        buttonPlayLastRecordAudio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) throws IllegalArgumentException,
-                    SecurityException, IllegalStateException {
-
-                buttonStop.setEnabled(false);
-                buttonStart.setEnabled(false);
-                buttonStopPlayingRecording.setEnabled(true);
-
-                mediaPlayer = new MediaPlayer();
-                try {
-                    mediaPlayer.setDataSource(AudioSavePathInDevice);
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                mediaPlayer.start();
-                Toast.makeText(SignupVoice.this, "Recording Playing",
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-
-        buttonStopPlayingRecording.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                buttonStop.setEnabled(false);
-                buttonStart.setEnabled(true);
-                buttonStopPlayingRecording.setEnabled(false);
-                buttonPlayLastRecordAudio.setEnabled(true);
-
-                if(mediaPlayer != null){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    MediaRecorderReady();
-                }
-                File dir = getFilesDir();
-                if(dir.exists()){
-                    File from = new File(dir,"temp.mp3");
-                    File to = new File(dir,name+".mp3");
-                    if(from.exists())
-                        from.renameTo(to);
-                }
-
-                File fdelete = new File(getFilesDir()+"/temp.mp3");
-                if (fdelete.exists()) {
-                    if (fdelete.delete()) {
-                        System.out.println("file Deleted : "+fdelete.toString());
-                    } else {
-                        System.out.println("file not Deleted");
-                    }
-                }
-                callfireBase();
-            }
-        });
 
         //Button to complete registration once sample is taken and ok
-        Com = (Button) findViewById(R.id.Com);
-        Com.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Need to set a command to say if there is no voice sample detected, the button will show a toast "Please record sample"
-                ReturnMain();
-            }
-        });
+
     }
 
-    public void ReturnMain() {
-        Intent intent = new Intent(this,MainActivity.class);
-        startActivityForResult(intent,REQ_CODE_ADD_ITEM);
-        Toast.makeText(this,"You are now a registered user",Toast.LENGTH_LONG).show();
-    }
 
     public void MediaRecorderReady(){
         mediaRecorder=new MediaRecorder();
@@ -185,7 +115,18 @@ public class SignupVoice extends AppCompatActivity {
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setAudioEncodingBitRate(128000);
         mediaRecorder.setAudioSamplingRate(22050);
+        mediaRecorder.setMaxDuration(7000); // 1000 = 1 sec
         mediaRecorder.setOutputFile(AudioSavePathInDevice);
+        mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mr, int what, int extra) {
+                if(what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED){
+                    Toast.makeText(SignupVoice.this, "Recording stops. Limit reached", Toast.LENGTH_LONG).show();
+                    mr.stop();
+                    nextPage();
+                }
+            }
+        });
     }
 
     private void requestPermission() {
@@ -223,9 +164,11 @@ public class SignupVoice extends AppCompatActivity {
                 result1 == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void callfireBase(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        User user = new User(name,email);
-        ref.push().setValue(user);
+    public void nextPage(){
+        Intent i = new Intent(SignupVoice.this,SignupVoice2.class);
+        i.putExtra("name",name);
+        i.putExtra("email",email);
+        i.putExtra("path",AudioSavePathInDevice);
+        startActivity(i);
     }
 }
