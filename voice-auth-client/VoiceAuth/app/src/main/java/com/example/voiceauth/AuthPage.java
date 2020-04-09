@@ -79,7 +79,7 @@ public class AuthPage extends AppCompatActivity {
         //Textviews 14 and 15 will appear after username is confirmed
         TV14 = (TextView) findViewById(R.id.TV14);
         TV15 = (TextView) findViewById(R.id.TV15);
-        TV15.setText(getResources().getString(R.string.Regi));
+        TV15.setText(getResources().getString(R.string.Auth));
         //VoiceA button visibility default off, it will appear if the user name is registered
         //VoiceA button is use for voice authenication i.e. press and speak
 
