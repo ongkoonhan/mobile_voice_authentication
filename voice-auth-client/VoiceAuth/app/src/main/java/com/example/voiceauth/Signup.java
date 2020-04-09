@@ -52,9 +52,12 @@ public class Signup extends AppCompatActivity {
             public void onClick(View v) {
                 EditText userName = findViewById(R.id.UserN);
                 EditText email = findViewById(R.id.Email);
-                if(userName.getText().toString().isEmpty() || email.getText().toString().isEmpty()){
+                if (userName.getText().toString().isEmpty() || email.getText().toString().isEmpty()) {
                     TextView message = findViewById(R.id.ErrorMessage);
                     message.setText("Username or Email cannot be empty");
+                }else if(!email.getText().toString().contains("@") || !email.getText().toString().contains(".com")){
+                    TextView message = findViewById(R.id.ErrorMessage);
+                    message.setText("Email is in invalid format");
                 }else {
                     OpensignupV();
                 }
