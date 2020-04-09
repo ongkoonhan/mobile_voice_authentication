@@ -7,7 +7,7 @@ import numpy as np
 
 N_MELS = 128
 NUM_VOTES = 50
-VOTING_THRESHOLD = 40   # 80%
+VOTING_THRESHOLD = 45   # 90%
 
 
 class VoiceAuthentication:
@@ -23,8 +23,11 @@ class VoiceAuthentication:
         wav_1_samples, wav_1_sample_rate = librosa.core.load(wav_1)
         wav_2_samples, wav_2_sample_rate = librosa.core.load(wav_2)
         # Check if wav files are empty
-        if self.__wav_null_check(wav_1_samples) or self.__wav_null_check(wav_2_samples):
+        null_check = [self.__wav_null_check(wav) for wav in [wav_1_samples, wav_2_samples]]
+        if any(null_check):
+            for i, null in enumerate(null_check): print("WAV {} NULL".format(i+1))
             is_same_user, votes, vote_ratio = False, -1, -1
+            print("AUTH: {}, VOTES: {} ({})".format(is_same_user, votes, vote_ratio))
             return is_same_user, votes, vote_ratio
         # Wav to spectrogram
         spectrograms = [self.__wav_to_spectrogram(wav, extend_copy=True) for wav in [wav_1_samples, wav_2_samples]]
@@ -58,7 +61,7 @@ class VoiceAuthentication:
         self.device = device
 
     def __wav_null_check(self, samples):
-        is_null = np.sum(samples[:2000]) == 0.0
+        is_null = np.sum(np.abs(samples[::10])) == 0.0
         return is_null
 
     def __wav_to_spectrogram(self, samples, extend_copy=False):
