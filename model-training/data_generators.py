@@ -18,6 +18,7 @@ class BaseDataGenerator:
             img_slice[i, :, :] = spectrogram[:, slice_start:slice_start + height]  # get slice (pytorch style)
             slice_start += slide_step  # slide
         img_slice = img_slice.astype("float32")
+        img_slice = img_slice / np.amax(np.absolute(img_slice))  # normalize to range [-1, 1]
         return img_slice
 
     @classmethod
@@ -58,10 +59,8 @@ class ContrastiveDataGenerator(BaseDataGenerator):
                 # get class label / idx of positive sample
                 pos_candidate_idx = sample_spectrograms_indices.index(pos_idx)
                 labels.append(pos_candidate_idx)
-                # Normalize input imgs
-                for i, img in enumerate([query_img, *candidate_imgs]):
-                    img = img / np.amax(np.absolute(img))  # normalize to range [-1, 1]
-                    query_and_candidate_imgs[i].append(img)
+                # Add to output list
+                for i, img in enumerate([query_img, *candidate_imgs]): query_and_candidate_imgs[i].append(img)
             # Convert to tensor
             labels = torch.tensor(labels)
             input_imgs = torch.tensor(query_and_candidate_imgs)
@@ -107,8 +106,6 @@ class VerificationDataGenerator(BaseDataGenerator):
                 imgs.append(self.get_sliding_img_slice_from_spectrogram(self.sub_samples[pos_idx]))
                 # Generate negative candidate
                 imgs.append(self.get_sliding_img_slice_from_spectrogram(self.sub_samples[neg_idx]))
-                # Normalize input imgs
-                imgs = [img / np.amax(np.absolute(img)) for img in imgs]  # normalize to range [-1, 1]
                 # Generate labels and append to main list
                 # Positive
                 labels.append(1); query_imgs.append(imgs[0]); candidate_imgs.append(imgs[1])

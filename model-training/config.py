@@ -9,6 +9,7 @@ audio_test_folder = os.path.join(data_folder, r"audio\vox1_test_wav")
 
 output_data_folder = os.path.join(r"D:\Desktop\projects\speaker_recognition_voxceleb1\output_data")
 models_folder = os.path.join(output_data_folder, "models")
+EER_folder = os.path.join(output_data_folder, "EER")
 
 
 ### Data processing config
