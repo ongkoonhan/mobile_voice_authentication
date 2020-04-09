@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,33 +19,31 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
-import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
-import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
-import cafe.adriel.androidaudioconverter.model.AudioFormat;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SignupVoice extends AppCompatActivity {
-    private Button buttonStart,buttonStop,buttonPlayLastRecordAudio,buttonStopPlayingRecording,Com;
+    private Button buttonStart,buttonStop;
     private final int REQ_CODE_ADD_ITEM =6789;
     String AudioSavePathInDevice = null;
     MediaRecorder mediaRecorder ;
     public static final int RequestPermissionCode = 1;
     String name ="";
     String email ="";
+    private int seconds = 7;
+    private CountDownTimer mCountDownTimer;
+    private static  final long START_TIME_IN_MILLIS = 7000;
+    private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
+    TextView timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_voice);
+        timer = findViewById(R.id.timer);
         //Need to Yicheng's part on voice recording
         buttonStart =  (Button)findViewById(R.id.Record);
         buttonStop = (Button)findViewById(R.id.Stop);
@@ -75,6 +75,7 @@ public class SignupVoice extends AppCompatActivity {
                     try {
                         mediaRecorder.prepare();
                         mediaRecorder.start();
+                        startTimer();
                     } catch (IllegalStateException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -171,4 +172,27 @@ public class SignupVoice extends AppCompatActivity {
         i.putExtra("path",AudioSavePathInDevice);
         startActivity(i);
     }
+
+    private void startTimer(){
+        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTimeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+    }
+
+    private void updateCountDownText(){
+        int minutes = (int) (mTimeLeftInMillis/1000)/60;
+        int seconds = (int) (mTimeLeftInMillis/1000)%60;
+        String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d",minutes,seconds);
+        timer.setText(timeLeftFormatted.toString());
+    }
+
 }

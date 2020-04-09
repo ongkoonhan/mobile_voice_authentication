@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
         android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="300dp"
         android:text="RECORD"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV7" />
@@ -50,14 +50,23 @@
         android:id="@+id/Stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="300dp"
         android:layout_marginEnd="70dp"
         android:layout_marginRight="70dp"
         android:text="Stop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV7" />
 
-
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="160dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="440dp"
+        android:text="00:00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

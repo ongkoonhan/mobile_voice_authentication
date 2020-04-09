@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -252,15 +259,19 @@ public class AuthPage extends AppCompatActivity {
 
         String requestURL = "https://45bb8e2f.ngrok.io/verify";
         String file_path = getFilesDir()+"/"+name+"1.wav";
-        String file_path2 = getFilesDir()+"/"+name+".wav";
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
             multipart.addFilePart("wav1", new File(file_path));
-            multipart.addFilePart("wav2", new File(file_path2));
+            multipart.addFilePart("wav2", getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS+"/"+name+".wav"));
             List<String> response = multipart.finish();
-            for(String s : response){
-                Log.v("Jsonreqquest",s);
+            for(int index = 0; index<response.size(); index++){
+                if(index == 2) {
+                    if(response.get(index).contains("true")){
+                        result =true;
+                    }
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -288,31 +299,17 @@ public class AuthPage extends AppCompatActivity {
         StorageReference storageRef = storage.getReference().child("user/"+name+".wav");
         File localFile = new File(getFilesDir()+"/"+name+".wav");
         String path =localFile.getPath();
-        /*
-        storageRef.getFile(localFile).addOnSuccessListener(
-                new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Boolean result = apiCall();
-                    if(result){
-                        OpenFinal();
-                    }else{
-                        Toast.makeText(AuthPage.this,"Error",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
-        */
-
         storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 String url = uri.toString();
-                downloadFile(AuthPage.this,name,".wav",getFilesDir().toString(),url);
+                downloadFile(AuthPage.this,name,".wav", Environment.DIRECTORY_DOWNLOADS+"/".toString(),url);
+                Boolean result = apiCall();
+                if(result){
+                    OpenFinal();
+                }else{
+                    Toast.makeText(AuthPage.this,"Error In Moving",Toast.LENGTH_SHORT).show();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -331,6 +328,7 @@ public class AuthPage extends AppCompatActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalFilesDir(context,destinationDirectory,fileName+fileExtension);
         downloadmanager.enqueue(request);
+
     }
 
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,9 +50,14 @@ public class Signup extends AppCompatActivity {
         NextA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //maybe need to add another code below to say that if nothing is saved, cannot go to next page
-                //go to next signup page to input voice sample
-                OpensignupV();
+                EditText userName = findViewById(R.id.UserN);
+                EditText email = findViewById(R.id.Email);
+                if(userName.getText().toString().isEmpty() || email.getText().toString().isEmpty()){
+                    TextView message = findViewById(R.id.ErrorMessage);
+                    message.setText("Username or Email cannot be empty");
+                }else {
+                    OpensignupV();
+                }
             }
         });
     }
@@ -84,7 +90,8 @@ public class Signup extends AppCompatActivity {
             intent.putExtra("email",email.getText().toString());
             startActivityForResult(intent,REQ_CODE_ADD_ITEM);
         }else{
-            Toast.makeText(this, "UserName exist", Toast.LENGTH_SHORT).show();
+            TextView message = findViewById(R.id.ErrorMessage);
+            message.setText("Username exist, pick another one");
         }
     }
 }
