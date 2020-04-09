@@ -86,7 +86,7 @@ public class SignupVoice2 extends AppCompatActivity {
 
             public void onClick(View view) {
                 buttonStopPlayingRecording.setEnabled(false);
-                if(mediaPlayer.isPlaying()){
+                if(mediaPlayer != null){
                     mediaPlayer.stop();
                     mediaPlayer.release();
                 }

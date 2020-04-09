@@ -249,21 +249,22 @@ public class AuthPage extends AppCompatActivity {
 
     public List<String> apiCall(){
         Boolean result = false;
-
+        //String requestURL = "https://5e738e2f.ngrok.io/verify";
         String requestURL = "https://cs461voiceauth.burrow.io/verify";
         String file_path = getFilesDir()+"/"+name+"1.wav";
+        String path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+name+".wav";
         List<String> response = new ArrayList<String>();
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
             multipart.addFilePart("wav1", new File(file_path));
-            String path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+name+".wav";
             multipart.addFilePart("wav2", new File(path));
             response = multipart.finish();
-            new File(file_path).delete();
-            new File(path).delete();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        new File(file_path).delete();
+        new File(path).delete();
         return response;
     }
 
@@ -295,7 +296,7 @@ public class AuthPage extends AppCompatActivity {
                 downloadFile(AuthPage.this,name,".wav", Environment.DIRECTORY_DOWNLOADS+"/".toString(),url);
                 List<String>result = apiCall();
                 if(result.isEmpty()){
-                    Toast.makeText(AuthPage.this,"Error In Moving",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AuthPage.this,"Try Again Unstable Connection",Toast.LENGTH_SHORT).show();
                 }else{
                     if(result.size()<=5){
                         if(result.get(2).contains("true")){
