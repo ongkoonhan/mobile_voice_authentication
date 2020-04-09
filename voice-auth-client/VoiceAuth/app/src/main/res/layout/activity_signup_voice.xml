@@ -4,45 +4,77 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/black"
     tools:context=".SignupVoice">
 
     <TextView
         android:id="@+id/TV6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="THANK YOU"
-        android:textSize="16sp"
+        android:text="I NEED YOUR VOICE"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#F08080"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+<!--    <TextView-->
+<!--        android:id="@+id/Newuser"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="10sp"-->
+<!--        android:layout_marginLeft="10sp"-->
+<!--        android:hint="New user"-->
+<!--        android:textSize="30sp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textColor="#F08080"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:layout_marginTop="40sp"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/TV6" />-->
+
     <TextView
-        android:id="@+id/Newuser"
+        android:id="@+id/TV1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:hint="New user"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/TV6" />
+        android:layout_marginTop="20sp"
+        android:paddingHorizontal="20sp"
+        android:foregroundGravity="center_horizontal"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:text="RECITE THE FOLLOWING SENTENCE"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TV6"/>
 
     <TextView
         android:id="@+id/TV7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:text="PLEASE RECORD YOUR VOICE FOR FUTURE LOGIN"
+        android:text="PLEASE RECORD YOUR VOICE\nFOR FUTURE LOGINS"
+        android:layout_marginTop="10sp"
+        android:textSize="20sp"
+        android:textColor="#2196F3"
+        android:background="@drawable/blue_box"
+        android:padding="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/TV1" />
 
     <Button
         android:id="@+id/Record"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginStart="70sp"
+        android:layout_marginLeft="70sp"
+        android:layout_marginTop="40sp"
         android:text="RECORD"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV7" />
 
@@ -50,23 +82,46 @@
         android:id="@+id/Stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginRight="70dp"
+        android:layout_marginTop="40sp"
+        android:layout_marginEnd="70sp"
+        android:layout_marginRight="70sp"
         android:text="Stop"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV7" />
 
+    <ImageView
+        android:id="@+id/centre_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/soundwave"
+        android:adjustViewBounds="true"
+        android:scaleType="fitEnd"
+        android:maxHeight="150sp"
+        android:layout_marginTop="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/timer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <TextView
         android:id="@+id/timer"
-        android:layout_width="160dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="440dp"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:layout_marginTop="40sp"
         android:text="00:00"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#2196F3"
+        android:background="@drawable/circle_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/Record" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

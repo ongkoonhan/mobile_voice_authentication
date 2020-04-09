@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/black"
     tools:context=".SignupVoice2">
 
 
@@ -11,30 +12,46 @@
         android:id="@+id/TV8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="PLEASE CHECK THE VOICE RECORDING"
-        android:textSize="16sp"
-        />
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#F08080"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/PlayB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="50sp"
+        android:layout_marginLeft="50sp"
+        android:layout_marginTop="20sp"
+        app:layout_goneMarginEnd="40sp"
         android:text="play"
+        android:background="@drawable/circle_button"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV8" />
 
     <Button
         android:id="@+id/StopP"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginRight="70dp"
-        android:text="Complete Signing up"
+        android:layout_height="100sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="30sp"
+        android:layout_marginRight="30sp"
+        android:paddingVertical="10sp"
+        android:text="Complete\nSigning up"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
+        app:layout_constraintStart_toEndOf="@+id/PlayB"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV8" />
 
@@ -42,9 +59,12 @@
         android:id="@+id/Com"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="40sp"
         android:text="Record again"
-        android:textSize="16sp"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PlayB" />

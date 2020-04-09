@@ -4,39 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/black"
     tools:context=".Signup">
 
     <TextView
         android:id="@+id/TV4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GREETING NEW USER"
-        android:textSize="18sp"
+        android:text="NICE TO MEET YOU"
+        android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/UserN"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Name:"
+        android:textColor="#F08080"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV5" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/TV5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="PLEASE PROVIDE YOUR PROFILE INFORMATION"
+        android:text="PLEASE PROVIDE INFORMATION\nFOR YOUR PROFILE"
+        android:layout_marginTop="20sp"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/TV4" />
+
+    <EditText
+        android:id="@+id/UserN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Name:"
+        android:textSize="20sp"
+        android:background="#DDD7D7"
+        android:padding="15sp"
+        android:layout_marginTop="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV5" />
 
     <EditText
         android:id="@+id/Email"
@@ -45,6 +56,10 @@
         android:ems="10"
         android:inputType="textEmailAddress"
         android:hint="Email:"
+        android:textSize="20sp"
+        android:background="#DDD7D7"
+        android:padding="15sp"
+        android:layout_marginTop="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/UserN" />
@@ -53,13 +68,16 @@
         android:id="@+id/SaveP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginStart="20sp"
+        android:layout_marginLeft="20sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginRight="20sp"
         android:text="back"
-        android:textSize="16sp"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintEnd_toStartOf="@+id/NextA"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Email" />
@@ -68,10 +86,14 @@
         android:id="@+id/NextA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="80sp"
+        android:layout_marginRight="80sp"
         android:text="Next"
+        android:background="@drawable/curve_long_button"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:paddingHorizontal="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Email" />
 
@@ -79,10 +101,12 @@
         android:id="@+id/ErrorMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="40sp"
         android:text=""
+        android:textColor="#FF248E"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/NextA" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
