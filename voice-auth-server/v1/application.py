@@ -7,6 +7,8 @@ import app_setup
 
 application = Flask(__name__)
 
+VOICE_AUTH_MODEL = VoiceAuthentication('mobile_model.pt')
+
 
 @application.route('/')
 def home():
@@ -29,7 +31,7 @@ def verify():
     f1_path = get_and_save_temp_file("wav1")
     f2_path = get_and_save_temp_file("wav2")
 
-    result = VoiceAuthentication('mobile_model.pt').authenticate(f1_path, f2_path)
+    result = VOICE_AUTH_MODEL.authenticate(f1_path, f2_path)
 
     # return render_template('index.html', display=result[0])
     return jsonify(verification=result[0],

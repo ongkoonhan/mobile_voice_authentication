@@ -19,8 +19,15 @@ class VoiceAuthentication:
         self.__load_model()
 
     def authenticate(self, wav_1, wav_2):
+        # Load wav files
+        wav_1_samples, wav_1_sample_rate = librosa.core.load(wav_1)
+        wav_2_samples, wav_2_sample_rate = librosa.core.load(wav_2)
+        # Check if wav files are empty
+        if self.__wav_null_check(wav_1_samples) or self.__wav_null_check(wav_2_samples):
+            is_same_user, votes, vote_ratio = False, -1, -1
+            return is_same_user, votes, vote_ratio
         # Wav to spectrogram
-        spectrograms = [self.__wav_to_spectrogram(wav, extend_copy=True) for wav in [wav_1, wav_2]]
+        spectrograms = [self.__wav_to_spectrogram(wav, extend_copy=True) for wav in [wav_1_samples, wav_2_samples]]
         # create input tensor
         input_imgs_list = [[], []]
         # Majority voting
@@ -33,8 +40,8 @@ class VoiceAuthentication:
         outputs, preds = self.__model_predict(input_imgs)
         if self.print_info: print(outputs); print(preds)
         # aggregate votes
-        is_same_user = self.__preds_aggregator(preds)
-        return is_same_user
+        votes_results = self.__preds_aggregator(preds)
+        return votes_results
 
 
     ### Private methods
@@ -50,8 +57,11 @@ class VoiceAuthentication:
         self.model = model.to(device)
         self.device = device
 
-    def __wav_to_spectrogram(self, wav_file, extend_copy=False):
-        samples, sample_rate = librosa.core.load(wav_file)
+    def __wav_null_check(self, samples):
+        is_null = np.sum(samples[:2000]) == 0.0
+        return is_null
+
+    def __wav_to_spectrogram(self, samples, extend_copy=False):
         if extend_copy: samples = np.append(samples, samples)   # add copy to increase sample size
         S = librosa.feature.melspectrogram(samples, n_mels=N_MELS)
         S_dB = librosa.power_to_db(S, ref=1.0)
@@ -85,8 +95,10 @@ class VoiceAuthentication:
     def __preds_aggregator(self, preds):
         preds = preds.flatten().tolist()
         votes = sum(preds)
-        print("VOTES: {}".format(votes))
-        return votes >= VOTING_THRESHOLD, votes, votes*100/len(preds)
+        is_same_user = votes >= VOTING_THRESHOLD
+        vote_ratio = votes / NUM_VOTES * 100.0
+        print("AUTH: {}, VOTES: {} ({})".format(is_same_user, votes, vote_ratio))
+        return is_same_user, votes, vote_ratio
 
 
 
