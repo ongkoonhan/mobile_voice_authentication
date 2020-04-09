@@ -105,6 +105,8 @@ public class SignupVoice2 extends AppCompatActivity {
                     mediaPlayer.release();
                 }
                 Intent i = new Intent(SignupVoice2.this,SignupVoice.class);
+                i.putExtra("name",name);
+                i.putExtra("email",email);
                 startActivity(i);
             }
         });

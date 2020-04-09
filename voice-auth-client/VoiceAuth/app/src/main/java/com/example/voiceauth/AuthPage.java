@@ -41,6 +41,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
@@ -149,15 +151,6 @@ public class AuthPage extends AppCompatActivity {
 
     }
 
-    public void OpenFinal() {
-        //for now, it will go to the final page
-        //the actual code will be for the voice spoken to match with the sample collected
-        Intent intent = new Intent(this,Final.class);
-        startActivityForResult(intent,REQ_CODE_ADD_ITEM);
-    }
-
-
-
 
     public void MediaRecorderReady(){
         mediaRecorder=new MediaRecorder();
@@ -254,28 +247,22 @@ public class AuthPage extends AppCompatActivity {
 
     }
 
-    public boolean apiCall(){
+    public List<String> apiCall(){
         Boolean result = false;
 
         String requestURL = "https://cs461voiceauth.burrow.io/verify";
         String file_path = getFilesDir()+"/"+name+"1.wav";
+        List<String> response = new ArrayList<String>();
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
             multipart.addFilePart("wav1", new File(file_path));
-            multipart.addFilePart("wav2", getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS+"/"+name+".wav"));
-            List<String> response = multipart.finish();
-            for(int index = 0; index<response.size(); index++){
-                if(index == 2) {
-                    if(response.get(index).contains("true")){
-                        result =true;
-                    }
-                }
-            }
-
+            String path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+name+".wav";
+            multipart.addFilePart("wav2", new File(path));
+            response = multipart.finish();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return result;
+        return response;
     }
 
     private void AuthprocessData(DataSnapshot dataSnapshot) {
@@ -304,11 +291,25 @@ public class AuthPage extends AppCompatActivity {
             public void onSuccess(Uri uri) {
                 String url = uri.toString();
                 downloadFile(AuthPage.this,name,".wav", Environment.DIRECTORY_DOWNLOADS+"/".toString(),url);
-                Boolean result = apiCall();
-                if(result){
-                    OpenFinal();
-                }else{
+                List<String>result = apiCall();
+                if(result.isEmpty()){
                     Toast.makeText(AuthPage.this,"Error In Moving",Toast.LENGTH_SHORT).show();
+                }else{
+                    if(result.size()<=5){
+                        if(result.get(2).contains("true")){
+                            Toast.makeText(AuthPage.this,"Verify",Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(AuthPage.this,Final.class);
+                            Bundle args = new Bundle();
+                            args.putSerializable("ARRAYLIST",(Serializable)result);
+                            intent.putExtra("BUNDLE",args);
+
+                            startActivityForResult(intent,REQ_CODE_ADD_ITEM);
+                        }else{
+                            Toast.makeText(AuthPage.this,"Not Verify",Toast.LENGTH_SHORT).show();
+                            TextView tv = findViewById(R.id.Verifylog);
+                            tv.setText(result.toString());
+                        }
+                    }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
