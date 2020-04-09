@@ -1,20 +1,36 @@
 package com.example.voiceauth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Context;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +38,7 @@ import java.util.List;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -64,10 +81,22 @@ public class AuthPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //code to say if username not found, put toast to say please register
-                //If username is found, the VoiceA button will appear
-                TV14.setVisibility(View.VISIBLE);
-                TV15.setVisibility(View.VISIBLE);
-                VoiceA.setVisibility(View.VISIBLE);
+                EditText userName = findViewById(R.id.RegN);
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference user = ref.child("users");
+                name = userName.getText().toString();
+                Query query = user.orderByChild("name").equalTo(name);
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        AuthprocessData(dataSnapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        //error handling don here
+                    }
+                });
             }
         });
 
@@ -99,6 +128,16 @@ public class AuthPage extends AppCompatActivity {
                 }
             }
         });
+        AndroidAudioConverter.load(this, new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+                // Great!
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // FFmpeg is not supported by device
+            }
+        });
 
 
     }
@@ -111,24 +150,7 @@ public class AuthPage extends AppCompatActivity {
     }
 
 
-    public boolean apiCall(){
-        Boolean result = false;
-        filechecker(findViewById(android.R.id.content));
-        String requestURL = "https://c2927d55.ngrok.io/verify";
-        String file_path = getFilesDir()+"/"+name+".wav";
-        try {
-            MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
-            multipart.addFilePart("wav1", new File(file_path));
-            multipart.addFilePart("wav2", new File(file_path));
-            List<String> response = multipart.finish();
-            for(String s : response){
-                Log.v("Jsonreqquest",s);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
+
 
     public void MediaRecorderReady(){
         mediaRecorder=new MediaRecorder();
@@ -145,6 +167,7 @@ public class AuthPage extends AppCompatActivity {
                 if(what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED){
                     Toast.makeText(AuthPage.this, "Recording stops. Limit reached", Toast.LENGTH_LONG).show();
                     mr.stop();
+                    filechecker(findViewById(android.R.id.content));
                 }
             }
         });
@@ -191,23 +214,24 @@ public class AuthPage extends AppCompatActivity {
         File dir = getFilesDir();
         File from = new File(getFilesDir()+"/temp.mp3");
         convertMP3toWAV(from,v);
-        File fdelete = from;
-        if (fdelete.exists()) {
-            if (fdelete.delete()) {
-                Toast.makeText(this, "file Deleted :"+fdelete.toString(), Toast.LENGTH_SHORT).show();
-            } else {
-                System.out.println("file not Deleted");
-            }
-        }
     }
 
     public void convertMP3toWAV(File mp3,View v){
         IConvertCallback callback = new IConvertCallback() {
             @Override
             public void onSuccess(File convertedFile) {
-                File to = new File(getFilesDir()+"/"+name+".wav");
+                File to = new File(getFilesDir()+"/"+name+"1.wav");
                 convertedFile.renameTo(to);
+                download();
                 Toast.makeText(v.getContext(), "SUCCESS: " + to.getPath(), Toast.LENGTH_LONG).show();
+                File fdelete = new File(getFilesDir()+"/temp.mp3");
+                if (fdelete.exists()) {
+                    if (fdelete.delete()) {
+                        Toast.makeText(AuthPage.this, "file Deleted :"+fdelete.toString(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        System.out.println("file not Deleted");
+                    }
+                }
             }
             @Override
             public void onFailure(Exception error) {
@@ -220,12 +244,93 @@ public class AuthPage extends AppCompatActivity {
                 .setFormat(AudioFormat.WAV)
                 .setCallback(callback)
                 .convert();
-         boolean result = apiCall();
-        if(result){
-            OpenFinal();
-        }else{
-            Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show();
+
+    }
+
+    public boolean apiCall(){
+        Boolean result = false;
+
+        String requestURL = "https://45bb8e2f.ngrok.io/verify";
+        String file_path = getFilesDir()+"/"+name+"1.wav";
+        String file_path2 = getFilesDir()+"/"+name+".wav";
+        try {
+            MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
+            multipart.addFilePart("wav1", new File(file_path));
+            multipart.addFilePart("wav2", new File(file_path2));
+            List<String> response = multipart.finish();
+            for(String s : response){
+                Log.v("Jsonreqquest",s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return result;
+    }
+
+    private void AuthprocessData(DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.hasChildren()) {
+            Toast.makeText(this, "No Such UserName", Toast.LENGTH_SHORT).show();
+        }else{
+            //If username is found, the VoiceA button will appear
+            TV14.setVisibility(View.VISIBLE);
+            TV15.setVisibility(View.VISIBLE);
+            VoiceA.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void download(){
+        FIREBASE_USERNAME = getResources().getString(R.string.username);
+        FIREBASE_PASSWORD = getResources().getString(R.string.password);
+        mAuth =FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(FIREBASE_USERNAME,FIREBASE_PASSWORD);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("user/"+name+".wav");
+        File localFile = new File(getFilesDir()+"/"+name+".wav");
+        String path =localFile.getPath();
+        /*
+        storageRef.getFile(localFile).addOnSuccessListener(
+                new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Boolean result = apiCall();
+                    if(result){
+                        OpenFinal();
+                    }else{
+                        Toast.makeText(AuthPage.this,"Error",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        */
+
+        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                String url = uri.toString();
+                downloadFile(AuthPage.this,name,".wav",getFilesDir().toString(),url);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+    }
+
+    public void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url) {
+        DownloadManager downloadmanager = (DownloadManager) context.
+                getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalFilesDir(context,destinationDirectory,fileName+fileExtension);
+        downloadmanager.enqueue(request);
     }
 
 

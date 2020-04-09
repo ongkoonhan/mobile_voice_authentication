@@ -83,7 +83,9 @@ public class SignupVoice2 extends AppCompatActivity {
 
         buttonStopPlayingRecording.setOnClickListener(new View.OnClickListener() {
             @Override
+
             public void onClick(View view) {
+                buttonStopPlayingRecording.setEnabled(false);
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.stop();
                     mediaPlayer.release();
@@ -120,10 +122,6 @@ public class SignupVoice2 extends AppCompatActivity {
     }
 
     public void ReturnMain() {
-        if(mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         Toast.makeText(this,"You are now a registered user",Toast.LENGTH_LONG).show();
@@ -176,9 +174,14 @@ public class SignupVoice2 extends AppCompatActivity {
     }
 
     public void uploadFirebase() {
+        FIREBASE_USERNAME = getResources().getString(R.string.username);
+        FIREBASE_PASSWORD = getResources().getString(R.string.password);
+        mAuth =FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(FIREBASE_USERNAME,FIREBASE_PASSWORD);
+
         FirebaseStorage storage = FirebaseStorage.getInstance("gs://projectonly-b6dda.appspot.com");
         StorageReference storageRef = storage.getReference();
-        StorageReference fileRef = storageRef.child("user");
+        StorageReference fileRef = storageRef.child("user/"+name+".wav");
         ProgressDialog progressDialog
                 = new ProgressDialog(SignupVoice2.this);
         progressDialog.setTitle("Uploading...");
