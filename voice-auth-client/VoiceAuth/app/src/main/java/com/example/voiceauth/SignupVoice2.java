@@ -100,7 +100,7 @@ public class SignupVoice2 extends AppCompatActivity {
         Com.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
+                if(mediaPlayer != null){
                     mediaPlayer.stop();
                     mediaPlayer.release();
                 }
@@ -202,7 +202,7 @@ public class SignupVoice2 extends AppCompatActivity {
                         progressDialog.dismiss();
                         Toast
                                 .makeText(SignupVoice2.this,
-                                        "Image Uploaded!!",
+                                        "Voice Uploaded!!",
                                         Toast.LENGTH_SHORT)
                                 .show();
                         File dir = getFilesDir();

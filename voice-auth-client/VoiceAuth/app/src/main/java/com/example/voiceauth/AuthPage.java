@@ -259,6 +259,8 @@ public class AuthPage extends AppCompatActivity {
             String path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+name+".wav";
             multipart.addFilePart("wav2", new File(path));
             response = multipart.finish();
+            new File(file_path).delete();
+            new File(path).delete();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -326,7 +328,6 @@ public class AuthPage extends AppCompatActivity {
                 getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalFilesDir(context,destinationDirectory,fileName+fileExtension);
         downloadmanager.enqueue(request);
 
