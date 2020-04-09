@@ -257,7 +257,7 @@ public class AuthPage extends AppCompatActivity {
     public boolean apiCall(){
         Boolean result = false;
 
-        String requestURL = "https://45bb8e2f.ngrok.io/verify";
+        String requestURL = "https://cs461voiceauth.burrow.io/verify";
         String file_path = getFilesDir()+"/"+name+"1.wav";
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, "UTF-8");
